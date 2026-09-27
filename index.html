@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Choo Choo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Kannada:wdth,wght@75..100,100..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #ffc300;
+    --yellow-btn: #ffd000;
+    --nav-bg: #eeeeee;
+    /* Oscine isn't a web font here; Anek Kannada stands in if it's not installed */
+    --font-ui: 'Oscine', 'Anek Kannada', system-ui, sans-serif;
+    --font-display: 'Anek Kannada', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #fff; }
+  body { overflow-x: hidden; }
+
+  /* the design is a 1440 x 885 frame; it scales down to fit narrower windows */
+  .viewport { width: 100%; height: calc(885px * var(--s, 1)); overflow: hidden; }
+  .page {
+    position: relative;
+    width: 1440px;
+    height: 885px;
+    margin: 0 auto;
+    transform-origin: top left;
+  }
+
+  /* ---------- nav ---------- */
+  .nav {
+    position: absolute; top: 16px; left: 250px; width: 940px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px; background: var(--nav-bg); border-radius: 8px;
+  }
+  .logo {
+    display: flex; gap: 1px; padding: 0 12px;
+    font: 800 22px/0.9 var(--font-ui); text-transform: uppercase; color: #000;
+    text-decoration: none;
+  }
+  .links { display: flex; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .links a {
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px 16px; background: #fff; border-radius: 8px;
+    font: 800 14px/0.9 var(--font-ui); text-transform: uppercase; color: #000; text-decoration: none;
+  }
+  .links a:hover { background: #f6f6f6; }
+
+  /* every text box is trimmed from cap height to baseline */
+  .t, .headline { display: block; text-box: trim-both cap alphabetic; }
+  .buy-small { width: 139px; background: #000; border-radius: 8px; text-decoration: none; }
+  .buy-small > span {
+    display: flex; align-items: center; gap: 4px;
+    padding: 8px 16px; background: var(--yellow-btn);
+    border: 2px solid #000; border-radius: 16px;
+    font: 800 14px/0.9 var(--font-ui); text-transform: uppercase; color: #000; white-space: nowrap;
+  }
+  .buy-small img { width: 24px; height: 24px; }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: absolute; top: 92px; left: 16px; width: 1408px; height: 777px;
+    background: var(--yellow); border-radius: 16px; overflow: clip;
+  }
+  .hero > * { position: absolute; }
+  .black-shape { left: -15px; top: -39px; width: 787px; height: 849px; }
+
+  /* $CHOO ticker: one track over the yellow, a dimmer copy clipped to the black shape */
+  .ticker { inset: 0; pointer-events: none; }
+  .ticker.dark {
+    -webkit-mask: url(assets/vector17.svg) -15px -39px / 787px 849px no-repeat;
+            mask: url(assets/vector17.svg) -15px -39px / 787px 849px no-repeat;
+  }
+  .ticker-track {
+    position: absolute; top: -11px; left: -61px;
+    display: flex; gap: var(--ticker-gap); width: max-content;
+    animation: ticker 16s linear infinite reverse;
+  }
+  .ticker-track img { width: 1530px; height: 485px; flex: none; }
+  .ticker.light img { opacity: 0.45; }
+  .ticker.dark img { opacity: 0.18; }
+  .hero { --ticker-gap: 120px; }
+  @keyframes ticker { to { transform: translateX(calc(-1530px - var(--ticker-gap))); } }
+  @media (prefers-reduced-motion: reduce) { .ticker-track { animation: none; } }
+
+  .headline {
+    top: 498px; margin: 0;
+    font-family: var(--font-display); font-weight: 800; font-size: 96px; line-height: 80px;
+    font-variation-settings: "wdth" 90; font-stretch: 90%;
+    text-transform: uppercase;
+  }
+  .headline.left { left: calc(50% - 680px); width: 439px; color: #fff; }
+  .headline.right { left: calc(50% + 392px); width: 296px; color: #000; }
+
+  .dog { left: calc(50% + 1px); top: 0; width: 837px; height: 837px; transform: translateX(-50%); }
+
+  .buy-big {
+    left: 1099px; top: 663px; width: 293px;
+    padding: 4px; background: #000; border-radius: 8px; text-decoration: none;
+  }
+  .buy-big > span {
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px 48px; background: #fff; border-radius: 32px;
+    font-family: var(--font-display); font-weight: 800; font-size: 40px; line-height: 0.9;
+    font-variation-settings: "wdth" 90; font-stretch: 90%;
+    text-transform: uppercase; color: #000; white-space: nowrap;
+    transition: transform 0.15s ease;
+  }
+  .buy-big:hover > span { transform: scale(0.98); }
+
+  .socials { left: 24px; top: 689px; display: flex; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .socials a {
+    display: flex; align-items: center; justify-content: center;
+    width: 72px; height: 72px; border-radius: 144px;
+    border: 2px solid rgba(255, 255, 255, 0.22);
+    transition: border-color 0.15s ease;
+  }
+  .socials a:hover { border-color: rgba(255, 255, 255, 0.5); }
+  .socials img { width: 32px; height: 32px; }
+  .dog .eye { transform-box: fill-box; transform-origin: center; }
+</style>
+</head>
+<body>
+<div class="viewport">
+<div class="page">
+  <nav class="nav">
+    <a class="logo" href="#"><span class="t">Choo</span><span class="t">Choo</span></a>
+    <ul class="links">
+      <li><a href="#stack"><span class="t">The stack</span></a></li>
+      <li><a href="#story"><span class="t">Story</span></a></li>
+      <li><a href="#data"><span class="t">Data</span></a></li>
+      <li><a href="#roadmap"><span class="t">Roadmap</span></a></li>
+      <li><a href="#choo"><span class="t">$Choo</span></a></li>
+    </ul>
+    <a class="buy-small" href="#buy"><span><span class="t">Buy</span> <img src="assets/coin.png" alt=""> <span class="t">$Choo</span></span></a>
+  </nav>
+
+  <main class="hero">
+    <div class="ticker light" aria-hidden="true"><div class="ticker-track"><img src="assets/choo-bg.svg" alt=""><img src="assets/choo-bg.svg" alt=""><img src="assets/choo-bg.svg" alt=""></div></div>
+    <img class="black-shape" src="assets/vector17.svg" alt="">
+    <div class="ticker dark" aria-hidden="true"><div class="ticker-track"><img src="assets/choo-bg.svg" alt=""><img src="assets/choo-bg.svg" alt=""><img src="assets/choo-bg.svg" alt=""></div></div>
+
+    <h1 class="headline left">The most measured</h1>
+    <p class="headline right">dog alive</p>
+
+<svg id="dog" class="dog" viewBox="21 12 344 344" role="img" aria-label="Choo, a black and white dog who is blind in one eye, following your cursor" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <mask id="frame" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="21" y="12" width="344" height="344">
+      <circle cx="193" cy="184" r="172" fill="#D9D9D9"/>
+    </mask>
+    <mask id="bodyMask" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="88" y="249" width="209" height="136">
+      <path d="M253.37 251.5C259.858 262.412 273.265 290.1 279.034 320.868C284.492 349.976 290.92 372.511 294.211 382.5H91.2891C94.5795 372.511 101.008 349.976 106.466 320.868C112.235 290.1 125.642 262.412 132.13 251.5H253.37Z" fill="#313133" stroke="black" stroke-width="4"/>
+    </mask>
+    <mask id="earMask" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="220" y="69" width="72" height="85">
+      <path d="M267 154C279.4 147.6 288.805 129.667 291.958 121.5C291.268 121.179 290.612 120.843 290 120.5C272.99 108.459 267.943 100.389 259.914 87.5528C259.296 86.5647 258.66 85.5485 258 84.4999L252.5 69.6028C239.727 76.5486 226.176 98.2827 220 110.5L267 154Z" fill="#313133"/>
+    </mask>
+    <clipPath id="faceClip">
+      <rect x="108" y="104" width="168" height="165" rx="54"/>
+    </clipPath>
+  </defs>
+
+  <g mask="url(#frame)">
+    <!-- body -->
+    <g id="body">
+      <path d="M104.5 320.5C110.5 288.5 124.667 259.833 131 249.5H254.5C260.833 259.833 275 288.5 281 320.5C287 352.5 294.167 376.5 297 384.5H192.75H88.5C91.3333 376.5 98.5 352.5 104.5 320.5Z" fill="#313133"/>
+      <g mask="url(#bodyMask)">
+        <g id="chest">
+          <path d="M140.831 302.084C138.707 314.14 152.979 326.475 162 334.75C169.857 341.957 164.478 376.711 160.082 398.825C158.183 408.373 165.402 417.5 175.138 417.5L208.862 417.5C218.598 417.5 225.817 408.373 223.918 398.825C219.522 376.711 214.143 341.957 222 334.75C231.336 326.186 246.274 314.429 244.832 301.843L238.248 244.359C236.397 228.2 222.72 216 206.456 216H182.854C167.323 216 154.035 227.152 151.34 242.447L140.831 302.084Z" fill="#FEFEFE"/>
+        </g>
+        <ellipse id="neckShadow" opacity="0.2" cx="192" cy="242" rx="78" ry="43" fill="black"/>
+      </g>
+      <path d="M253.37 251.5C259.858 262.412 273.265 290.1 279.034 320.868C284.492 349.976 290.92 372.511 294.211 382.5H91.2891C94.5795 372.511 101.008 349.976 106.466 320.868C112.235 290.1 125.642 262.412 132.13 251.5H253.37Z" stroke="black" stroke-width="4"/>
+    </g>
+
+    <!-- head -->
+    <g id="head">
+      <g id="ears">
+        <path d="M114.699 42.4944C114.747 42.5051 114.872 42.5399 115.09 42.6506C115.467 42.8424 115.971 43.186 116.603 43.7258C117.865 44.8039 119.413 46.47 121.194 48.6536C124.744 53.0062 129.016 59.1611 133.495 66.0979C142.106 79.4338 151.366 95.4755 157.535 106.669L113.36 152.254C101.53 143.5 93.2574 130.161 90.9797 114.217C90.4079 110.214 91.0877 103.76 92.6917 96.1057C94.2804 88.5243 96.724 79.9978 99.5139 71.969C102.306 63.9332 105.424 56.4582 108.344 50.9622C109.808 48.2065 111.188 46.0156 112.412 44.512C113.025 43.7601 113.558 43.2311 114 42.8928C114.383 42.5998 114.613 42.5166 114.699 42.4944ZM250.987 72.8879C254.793 70.2591 258.247 69.0785 261.232 69.4817C270.457 70.7284 283.032 72.946 293.389 78.3362C303.664 83.684 311.534 92.0136 312.001 105.569C312.175 110.594 311.002 113.82 309.373 115.921C307.736 118.033 305.46 119.234 303.019 119.876C300.565 120.521 298.041 120.573 296.091 120.448C295.125 120.387 294.319 120.283 293.762 120.197C293.588 120.169 293.44 120.141 293.318 120.119C293.111 119.966 292.817 119.748 292.448 119.469C291.655 118.871 290.514 117.997 289.126 116.895C286.348 114.689 282.591 111.581 278.667 107.967C274.74 104.349 270.673 100.248 267.262 96.0579C263.831 91.8444 261.161 87.6575 259.898 83.8674C259.548 82.8195 258.415 82.2535 257.367 82.6028C256.32 82.9521 255.754 84.0843 256.103 85.1321C257.589 89.592 260.607 94.2186 264.16 98.5833C267.733 102.971 271.947 107.214 275.957 110.908C279.971 114.607 283.807 117.78 286.639 120.028C287.992 121.102 289.118 121.965 289.927 122.576C289.568 123.239 289.095 124.101 288.521 125.112C287.116 127.582 285.117 130.938 282.739 134.487C280.357 138.04 277.616 141.756 274.73 144.961C272.237 147.729 269.709 150.03 267.282 151.536L222.472 110.063C226.341 102.626 232.602 92.2769 239.614 83.8411C243.338 79.3598 247.211 75.4959 250.987 72.8879Z" fill="#313133" stroke="black" stroke-width="4" stroke-linecap="round"/>
+      </g>
+
+      <rect x="106" y="102" width="172" height="169" rx="56" fill="#313133"/>
+
+      <!-- face features slide inside the head outline -->
+      <g clip-path="url(#faceClip)">
+        <g id="face">
+          <path d="M136 224.141C136 213.733 144.218 205.199 153.588 200.667C157.198 198.921 160.853 196.593 164 193.5C170.3 187.308 176.171 180.948 180.017 176.669C182.944 173.412 187.098 171.5 191.478 171.5L192.522 171.5C196.902 171.5 201.056 173.412 203.983 176.669C207.829 180.948 213.7 187.308 220 193.5C223.147 196.593 226.802 198.921 230.412 200.667C239.782 205.199 248 213.733 248 224.141C248 250.021 227.021 271 201.141 271H182.859C156.979 271 136 250.021 136 224.141Z" fill="#FEFEFE"/>
+          <g id="eyeGood"><circle class="eye" cx="237" cy="179" r="7" fill="black"/></g>
+          <g id="eyeBlind"><circle class="eye" cx="146" cy="179" r="7" fill="white"/></g>
+          <g id="nose">
+            <path d="M204 205C204 201.8 195.333 201.333 191 201.5C186.667 201.5 178.1 202.2 178.5 205C179 208.5 185.5 216 191 216.5C196.5 217 204 209 204 205Z" fill="black"/>
+          </g>
+        </g>
+      </g>
+
+      <rect x="108" y="104" width="168" height="165" rx="54" stroke="black" stroke-width="4"/>
+
+      <g id="earShade" mask="url(#earMask)">
+        <ellipse cx="276.126" cy="111.259" rx="13.6006" ry="31.5527" transform="rotate(-37.8444 276.126 111.259)" fill="black" fill-opacity="0.27"/>
+      </g>
+    </g>
+  </g>
+</svg>
+
+    <a class="buy-big" href="#buy"><span><span class="t">Buy $Choo</span></span></a>
+
+    <ul class="socials">
+      <li><a href="#" aria-label="Instagram"><img src="assets/instagram.svg" alt=""></a></li>
+      <li><a href="#" aria-label="X"><img src="assets/x.svg" alt=""></a></li>
+      <li><a href="#" aria-label="TikTok"><img src="assets/tiktok.svg" alt=""></a></li>
+    </ul>
+  </main>
+</div>
+</div>
+
+<script>
+  // scale the fixed 1440 frame down on narrower windows
+  const page = document.querySelector('.page');
+  const viewport = document.querySelector('.viewport');
+  function fit() {
+    const s = Math.min(1, innerWidth / 1440);
+    viewport.style.setProperty('--s', s);
+    page.style.transform = s < 1 ? `scale(${s})` : '';
+    page.style.marginLeft = s < 1 ? '0' : '';
+  }
+  addEventListener('resize', fit);
+  fit();
+</script>
+<script src="dog.js"></script>
+</body>
+</html>

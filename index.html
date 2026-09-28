@@ -20,20 +20,10 @@
   html, body { margin: 0; background: #fff; }
   body { overflow-x: hidden; }
 
-  /* the design is a 1440 x 885 frame; it scales down to fit narrower windows */
-  .viewport { width: 100%; height: calc(885px * var(--s, 1)); overflow: hidden; }
-  .page {
-    position: relative;
-    width: 1440px;
-    height: 885px;
-    margin: 0 auto;
-    transform-origin: top left;
-  }
-
   /* ---------- nav ---------- */
   .nav {
-    position: absolute; top: 16px; left: 250px; width: 940px;
-    display: flex; align-items: center; justify-content: space-between;
+    width: min(940px, calc(100% - 32px)); margin: 16px auto;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
     padding: 8px; background: var(--nav-bg); border-radius: 8px;
   }
   .logo {
@@ -51,7 +41,7 @@
 
   /* every text box is trimmed from cap height to baseline */
   .t, .headline { display: block; text-box: trim-both cap alphabetic; }
-  .buy-small { width: 139px; background: #000; border-radius: 8px; text-decoration: none; }
+  .buy-small { width: 139px; flex: none; background: #000; border-radius: 8px; text-decoration: none; }
   .buy-small > span {
     display: flex; align-items: center; gap: 4px;
     padding: 8px 16px; background: var(--yellow-btn);
@@ -60,72 +50,113 @@
   }
   .buy-small img { width: 24px; height: 24px; }
 
-  /* ---------- hero ---------- */
+  /* ---------- hero ----------
+     Desktop keeps the 1408 x 777 Figma composition. --u is one Figma pixel,
+     sized so the whole composition fits the hero's width and height. */
   .hero {
-    position: absolute; top: 92px; left: 16px; width: 1408px; height: 777px;
+    position: relative; margin: 0 16px 16px;
+    height: max(520px, min(calc((100vw - 32px) * 777 / 1408), calc(100svh - 108px)));
     background: var(--yellow); border-radius: 16px; overflow: clip;
+    container-type: size;
   }
-  .hero > * { position: absolute; }
-  .black-shape { left: -15px; top: -39px; width: 787px; height: 849px; }
+  .hero > * {
+    position: absolute;
+    --u: min(calc(100cqw / 1408), calc(100cqh / 777));
+    /* black shape box, shared by the shape and the dark ticker's mask */
+    --bx: calc(-15 * var(--u)); --by: calc(-39 * var(--u));
+    --bw: calc(787 * var(--u)); --bh: calc(849 * var(--u));
+    /* ticker */
+    --tw: calc(1530 * var(--u)); --th: calc(485 * var(--u));
+    --tgap: calc(120 * var(--u)); --ttop: calc(-11 * var(--u));
+  }
+  .black-shape { left: var(--bx); top: var(--by); width: var(--bw); height: var(--bh); }
 
   /* $CHOO ticker: one track over the yellow, a dimmer copy clipped to the black shape */
   .ticker { inset: 0; pointer-events: none; }
   .ticker.dark {
-    -webkit-mask: url(assets/vector17.svg) -15px -39px / 787px 849px no-repeat;
-            mask: url(assets/vector17.svg) -15px -39px / 787px 849px no-repeat;
+    -webkit-mask: url(assets/vector17.svg) var(--bx) var(--by) / var(--bw) var(--bh) no-repeat;
+            mask: url(assets/vector17.svg) var(--bx) var(--by) / var(--bw) var(--bh) no-repeat;
   }
   .ticker-track {
-    position: absolute; top: -11px; left: -61px;
-    display: flex; gap: var(--ticker-gap); width: max-content;
+    position: absolute; top: var(--ttop); left: calc(50% - var(--tw) / 2);
+    display: flex; gap: var(--tgap); width: max-content;
     animation: ticker 16s linear infinite reverse;
   }
-  .ticker-track img { width: 1530px; height: 485px; flex: none; }
+  .ticker-track img { width: var(--tw); height: var(--th); flex: none; }
   .ticker.light img { opacity: 0.45; }
   .ticker.dark img { opacity: 0.18; }
-  .hero { --ticker-gap: 120px; }
-  @keyframes ticker { to { transform: translateX(calc(-1530px - var(--ticker-gap))); } }
+  @keyframes ticker { to { transform: translateX(calc(-1 * (var(--tw) + var(--tgap)))); } }
   @media (prefers-reduced-motion: reduce) { .ticker-track { animation: none; } }
 
   .headline {
-    top: 498px; margin: 0;
-    font-family: var(--font-display); font-weight: 800; font-size: 96px; line-height: 80px;
+    top: calc(498 * var(--u)); margin: 0;
+    font-family: var(--font-display); font-weight: 800;
+    font-size: calc(96 * var(--u)); line-height: calc(80 * var(--u));
     font-variation-settings: "wdth" 90; font-stretch: 90%;
     text-transform: uppercase;
   }
-  .headline.left { left: calc(50% - 680px); width: 439px; color: #fff; }
-  .headline.right { left: calc(50% + 392px); width: 296px; color: #000; }
+  .headline.left { left: calc(24 * var(--u)); width: calc(439 * var(--u)); color: #fff; }
+  .headline.right { right: calc(16 * var(--u)); width: calc(296 * var(--u)); color: #000; }
 
-  .dog { left: calc(50% + 1px); top: 0; width: 837px; height: 837px; transform: translateX(-50%); }
+  .dog {
+    --size: calc(837 * var(--u));
+    left: calc(50% + var(--u)); top: 0; width: var(--size); height: var(--size); transform: translateX(-50%);
+  }
+  .dog .eye { transform-box: fill-box; transform-origin: center; }
 
   .buy-big {
-    left: 1099px; top: 663px; width: 293px;
-    padding: 4px; background: #000; border-radius: 8px; text-decoration: none;
+    right: calc(16 * var(--u)); top: calc(663 * var(--u)); width: calc(293 * var(--u));
+    padding: max(3px, calc(4 * var(--u))); background: #000; border-radius: 8px; text-decoration: none;
   }
   .buy-big > span {
     display: flex; align-items: center; justify-content: center;
-    padding: 32px 48px; background: #fff; border-radius: 32px;
-    font-family: var(--font-display); font-weight: 800; font-size: 40px; line-height: 0.9;
+    padding: calc(32 * var(--u)) calc(48 * var(--u)); background: #fff; border-radius: calc(32 * var(--u));
+    font-family: var(--font-display); font-weight: 800; font-size: calc(40 * var(--u)); line-height: 0.9;
     font-variation-settings: "wdth" 90; font-stretch: 90%;
     text-transform: uppercase; color: #000; white-space: nowrap;
     transition: transform 0.15s ease;
   }
   .buy-big:hover > span { transform: scale(0.98); }
 
-  .socials { left: 24px; top: 689px; display: flex; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .socials {
+    --size: calc(72 * var(--u));
+    left: calc(24 * var(--u)); top: calc(689 * var(--u));
+    display: flex; gap: calc(8 * var(--u)); margin: 0; padding: 0; list-style: none;
+  }
   .socials a {
     display: flex; align-items: center; justify-content: center;
-    width: 72px; height: 72px; border-radius: 144px;
+    width: var(--size); height: var(--size); border-radius: 50%;
     border: 2px solid rgba(255, 255, 255, 0.22);
     transition: border-color 0.15s ease;
   }
   .socials a:hover { border-color: rgba(255, 255, 255, 0.5); }
-  .socials img { width: 32px; height: 32px; }
-  .dog .eye { transform-box: fill-box; transform-origin: center; }
+  .socials img { width: 44%; height: 44%; }
+
+  /* ---------- small screens: stacked composition, --u is one pixel of a 358-wide hero ---------- */
+  @media (max-width: 759px) {
+    .links { display: none; }
+    .logo { padding: 0 8px; }
+    .hero { height: clamp(600px, calc(100svh - 108px), 880px); }
+    .hero > * {
+      --u: calc(100cqw / 358);
+      --bx: -6cqw; --by: -4cqh; --bw: 76cqw; --bh: 108cqh;
+      --tw: calc(700 * var(--u)); --th: calc(222 * var(--u));
+      --tgap: calc(56 * var(--u)); --ttop: calc(150 * var(--u));
+    }
+    .headline { top: calc(28 * var(--u)); font-size: calc(40 * var(--u)); line-height: calc(35 * var(--u)); }
+    .headline.left { left: calc(16 * var(--u)); width: calc(200 * var(--u)); }
+    .headline.right { right: calc(16 * var(--u)); width: calc(110 * var(--u)); text-align: right; }
+    .socials { --size: calc(48 * var(--u)); left: calc(16 * var(--u)); top: calc(128 * var(--u)); }
+    .dog {
+      --size: min(130cqw, 78cqh);
+      left: 50%; top: auto; bottom: calc(var(--size) * -0.08);
+    }
+    .buy-big { left: calc(12 * var(--u)); right: calc(12 * var(--u)); top: auto; bottom: calc(12 * var(--u)); width: auto; }
+    .buy-big > span { padding: calc(24 * var(--u)); font-size: calc(30 * var(--u)); border-radius: calc(24 * var(--u)); }
+  }
 </style>
 </head>
 <body>
-<div class="viewport">
-<div class="page">
   <nav class="nav">
     <a class="logo" href="#"><span class="t">Choo</span><span class="t">Choo</span></a>
     <ul class="links">
@@ -212,22 +243,7 @@
       <li><a href="#" aria-label="TikTok"><img src="assets/tiktok.svg" alt=""></a></li>
     </ul>
   </main>
-</div>
-</div>
 
-<script>
-  // scale the fixed 1440 frame down on narrower windows
-  const page = document.querySelector('.page');
-  const viewport = document.querySelector('.viewport');
-  function fit() {
-    const s = Math.min(1, innerWidth / 1440);
-    viewport.style.setProperty('--s', s);
-    page.style.transform = s < 1 ? `scale(${s})` : '';
-    page.style.marginLeft = s < 1 ? '0' : '';
-  }
-  addEventListener('resize', fit);
-  fit();
-</script>
 <script src="dog.js"></script>
 </body>
 </html>
